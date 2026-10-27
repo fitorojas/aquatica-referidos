@@ -13,7 +13,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Bebés y Niños Principiantes',
                 'slug' => 'bebes-y-ninos-principiantes',
-                'regular_price' => 42000.00,
+                'regular_price' => 35000.00,
                 'promo_price' => 30800.00,
                 'description' => 'Programa formativo de estimulación y ambientación acuática para infantes y niños en etapa inicial.',
                 'is_active' => true,
@@ -21,7 +21,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Niños Grandes y Adolescentes',
                 'slug' => 'ninos-grandes-y-adolescentes',
-                'regular_price' => 42000.00,
+                'regular_price' => 35000.00,
                 'promo_price' => 30800.00,
                 'description' => 'Desarrollo técnico de los cuatro estilos de natación, resistencia y seguridad en el agua.',
                 'is_active' => true,
@@ -29,7 +29,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Adultos Principiantes',
                 'slug' => 'adultos-principiantes',
-                'regular_price' => 45000.00,
+                'regular_price' => 35000.00,
                 'promo_price' => 30800.00,
                 'description' => 'Clases guiadas para superar el temor al agua y dominar los fundamentos de la natación.',
                 'is_active' => true,
@@ -37,7 +37,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Open Pool',
                 'slug' => 'open-pool',
-                'regular_price' => 38000.00,
+                'regular_price' => 35000.00,
                 'promo_price' => 30800.00,
                 'description' => 'Nado libre y entrenamiento continuo en carriles acondicionados.',
                 'is_active' => true,
@@ -45,7 +45,7 @@ class ServiceSeeder extends Seeder
             [
                 'name' => 'Aquafitness',
                 'slug' => 'aquafitness',
-                'regular_price' => 40000.00,
+                'regular_price' => 35000.00,
                 'promo_price' => 30800.00,
                 'description' => 'Entrenamiento aeróbico y de bajo impacto en el agua para tonificación y salud integral.',
                 'is_active' => true,

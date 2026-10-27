@@ -14,7 +14,7 @@
                 ¡Ambos disfrutan de una mensualidad de ₡30.800!
             </h1>
             <p class="mt-3 text-base sm:text-lg text-sky-100 leading-relaxed">
-                Refiere a un amigo, familiar o colega a AQUATICA. Cuando tu referido complete su matrícula en uno de nuestros 5 servicios participantes, <strong class="text-white underline">ambos recibirán su mensualidad a tarifa preferencial de ₡{{ number_format($benefitAmount, 0, ',', '.') }}</strong>.
+                Refiere a un amigo, familiar o conocido a AQUATICA. Cuando tu referido complete su matrícula en uno de nuestros 5 servicios participantes, <strong class="text-white underline">ambos recibirán su mensualidad a tarifa preferencial de ₡{{ number_format($benefitAmount, 0, ',', '.') }}</strong> (precio regular <span class="line-through">₡35.000</span>).
             </p>
         </div>
         <!-- Decoración de fondo -->
@@ -40,7 +40,7 @@
         </div>
     @endif
 
-    <!-- Formulario de Registro -->
+    <!-- Formulario de Registro Simplificado -->
     <form action="{{ route('public.referral.store') }}" method="POST" class="space-y-10">
         @csrf
 
@@ -56,7 +56,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre completo *</label>
                     <input type="text" name="referrer[full_name]" value="{{ old('referrer.full_name') }}" required
@@ -77,31 +77,24 @@
                         placeholder="Ej. 1-1234-0567"
                         class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Correo electrónico <span class="text-xs text-slate-400 font-normal">(Opcional)</span></label>
-                    <input type="email" name="referrer[email]" value="{{ old('referrer.email') }}"
-                        placeholder="correo@ejemplo.com"
-                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                </div>
             </div>
         </div>
 
-        <!-- SECCIÓN 2: Datos de la persona referida (Contacto / Encargado) -->
+        <!-- SECCIÓN 2: Datos de la persona referida / Alumno -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
             <div class="flex items-center space-x-3 pb-4 mb-6 border-b border-slate-100">
                 <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
                     2
                 </div>
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">¿A quién refieres? (Contacto o Encargado)</h2>
-                    <p class="text-xs text-slate-500">Persona a quien contactaremos para coordinar su ingreso a la academia.</p>
+                    <h2 class="text-lg font-bold text-slate-900">¿A quién refieres? (¿Quién asistirá a las clases? (Datos del Alumno))</h2>
+                    <p class="text-xs text-slate-500">Datos de la persona o alumno a quien contactaremos para coordinar su ingreso a la academia.</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre de la persona referida *</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre del referido / Alumno *</label>
                     <input type="text" name="referee[full_name]" value="{{ old('referee.full_name') }}" required
                         placeholder="Ej. Mariana Solís Rojas"
                         class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
@@ -120,102 +113,31 @@
                         placeholder="Ej. 1-0987-0654"
                         class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Correo electrónico <span class="text-xs text-slate-400 font-normal">(Opcional)</span></label>
-                    <input type="email" name="referee[email]" value="{{ old('referee.email') }}"
-                        placeholder="mariana@ejemplo.com"
-                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                </div>
             </div>
         </div>
 
-        <!-- SECCIÓN 3: Datos del Alumno (Distinción Menor vs Adulto) -->
+        <!-- SECCIÓN 3: Selección del Servicio Participante -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
             <div class="flex items-center space-x-3 pb-4 mb-6 border-b border-slate-100">
                 <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
                     3
                 </div>
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">¿Quién asistirá a las clases? (Datos del Alumno)</h2>
-                    <p class="text-xs text-slate-500">Distingue si el alumno es un menor a cargo o si es el mismo adulto referido.</p>
-                </div>
-            </div>
-
-            <!-- Switch Alumno = Encargado -->
-            <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                    <span class="block text-sm font-bold text-slate-800">¿El alumno es la misma persona referida?</span>
-                    <span class="block text-xs text-slate-500">Marca esta casilla para clases de Adultos, Open Pool o Aquafitness.</span>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="is_same_as_customer" name="student[is_same_as_customer]" value="1"
-                        {{ old('student.is_same_as_customer') ? 'checked' : '' }}
-                        class="sr-only peer" onchange="toggleStudentFields(this.checked)">
-                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
-                </label>
-            </div>
-
-            <!-- Campos del Alumno (Ocultables si es la misma persona) -->
-            <div id="student_fields_container" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre del alumno (Menor) *</label>
-                        <input type="text" id="student_full_name" name="student[full_name]" value="{{ old('student.full_name') }}"
-                            placeholder="Ej. Mateo Solís"
-                            class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Fecha de nacimiento <span class="text-xs text-slate-400 font-normal">(Opcional)</span></label>
-                        <input type="date" name="student[birth_date]" value="{{ old('student.birth_date') }}"
-                            class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Género</label>
-                        <select name="student[gender]" class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border bg-white">
-                            <option value="">Seleccione...</option>
-                            <option value="male" {{ old('student.gender') == 'male' ? 'selected' : '' }}>Masculino</option>
-                            <option value="female" {{ old('student.gender') == 'female' ? 'selected' : '' }}>Femenino</option>
-                            <option value="other" {{ old('student.gender') == 'other' ? 'selected' : '' }}>Otro</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Condición médica o notas de agua</label>
-                        <input type="text" name="student[medical_notes]" value="{{ old('student.medical_notes') }}"
-                            placeholder="Ej. Asma leve, fobia inicial al agua, etc."
-                            class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 4: Selección del Servicio Participante -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
-            <div class="flex items-center space-x-3 pb-4 mb-6 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
-                    4
-                </div>
-                <div>
                     <h2 class="text-lg font-bold text-slate-900">Servicio de Interés</h2>
-                    <p class="text-xs text-slate-500">Elige uno de los 5 servicios válidos para este programa.</p>
+                    <p class="text-xs text-slate-500">Todos los servicios participantes aplican la mensualidad preferencial de <strong>₡{{ number_format($benefitAmount, 0, ',', '.') }}</strong> en lugar de su tarifa regular de ₡35.000.</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($services as $service)
-                    <label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition hover:border-sky-400 group {{ old('service_id') == $service->id ? 'border-sky-600 bg-sky-50/50' : 'border-slate-200' }}">
+                    <label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition hover:border-sky-400 group {{ old('service_id', 1) == $service->id ? 'border-sky-600 bg-sky-50/50' : 'border-slate-200' }}">
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-bold text-slate-900 group-hover:text-sky-600 transition">{{ $service->name }}</span>
                             <input type="radio" name="service_id" value="{{ $service->id }}" {{ old('service_id', 1) == $service->id ? 'checked' : '' }} class="h-4 w-4 text-sky-600 border-slate-300 focus:ring-sky-500">
                         </div>
                         <p class="text-xs text-slate-500 mb-3 flex-grow">{{ $service->description }}</p>
                         <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                            <span class="text-slate-400 line-through">₡{{ number_format($service->regular_price, 0, ',', '.') }}</span>
+                            <span class="text-slate-400 line-through">₡35.000</span>
                             <span class="font-extrabold text-sky-700 bg-sky-100 px-2.5 py-0.5 rounded-full">Tarifa Referido: ₡{{ number_format($service->promo_price, 0, ',', '.') }}</span>
                         </div>
                     </label>
@@ -249,26 +171,3 @@
     </form>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    function toggleStudentFields(isSame) {
-        const container = document.getElementById('student_fields_container');
-        const inputName = document.getElementById('student_full_name');
-        if (isSame) {
-            container.classList.add('opacity-40', 'pointer-events-none');
-            inputName.removeAttribute('required');
-        } else {
-            container.classList.remove('opacity-40', 'pointer-events-none');
-            inputName.setAttribute('required', 'required');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkbox = document.getElementById('is_same_as_customer');
-        if (checkbox) {
-            toggleStudentFields(checkbox.checked);
-        }
-    });
-</script>
-@endpush

@@ -38,63 +38,21 @@ class ComprehensiveReferralWorkflowTest extends TestCase
         $response->assertSee('Aquafitness');
     }
 
-    public function test_can_register_child_referral_with_guardian(): void
+    public function test_can_register_referral_simplified(): void
     {
         $payload = [
             'referrer' => [
                 'full_name' => 'Marcos Jiménez Vega',
                 'phone' => '88112233',
                 'identification' => '115550666',
-                'email' => 'marcos@example.com',
             ],
             'referee' => [
                 'full_name' => 'Karla Montero Castro',
                 'phone' => '89445566',
                 'identification' => '117770888',
-                'email' => 'karla@example.com',
-            ],
-            'student' => [
-                'is_same_as_customer' => 0,
-                'full_name' => 'Sebastián Montero',
-                'birth_date' => '2021-08-10',
-                'gender' => 'male',
-                'medical_notes' => 'Ninguna condición conocida',
             ],
             'service_id' => $this->service->id,
             'notes' => 'Preferencia turno de la tarde',
-            'terms' => '1',
-        ];
-
-        $response = $this->post(route('public.referral.store'), $payload);
-
-        $referral = Referral::latest()->first();
-        $this->assertNotNull($referral);
-        $response->assertRedirect(route('public.referral.success', ['code' => $referral->referral_code]));
-
-        $this->assertEquals('50688112233', $referral->referrer->phone);
-        $this->assertEquals('50689445566', $referral->referee->phone);
-        $this->assertEquals('Sebastián Montero', $referral->student->full_name);
-        $this->assertFalse((bool) $referral->student->is_same_as_customer);
-        $this->assertEquals('pending', $referral->status);
-    }
-
-    public function test_can_register_adult_student_where_student_is_customer(): void
-    {
-        $openPool = Service::where('slug', 'open-pool')->first();
-
-        $payload = [
-            'referrer' => [
-                'full_name' => 'Daniela Vargas Gómez',
-                'phone' => '87661122',
-            ],
-            'referee' => [
-                'full_name' => 'Felipe Navarro Rojas',
-                'phone' => '83449988',
-            ],
-            'student' => [
-                'is_same_as_customer' => 1,
-            ],
-            'service_id' => $openPool->id,
             'terms' => '1',
         ];
 
@@ -104,8 +62,10 @@ class ComprehensiveReferralWorkflowTest extends TestCase
         $this->assertNotNull($referral);
         $response->assertRedirect(route('public.referral.success', ['code' => $referral->referral_code]));
 
-        $this->assertEquals('Felipe Navarro Rojas', $referral->student->full_name);
-        $this->assertTrue((bool) $referral->student->is_same_as_customer);
+        $this->assertEquals('50688112233', $referral->referrer->phone);
+        $this->assertEquals('50689445566', $referral->referee->phone);
+        $this->assertEquals('Karla Montero Castro', $referral->student->full_name);
+        $this->assertEquals('pending', $referral->status);
     }
 
     public function test_self_referral_is_strictly_blocked(): void
@@ -118,9 +78,6 @@ class ComprehensiveReferralWorkflowTest extends TestCase
             'referee' => [
                 'full_name' => 'Roberto Solís Clon',
                 'phone' => '88990011', // Mismo teléfono
-            ],
-            'student' => [
-                'is_same_as_customer' => 1,
             ],
             'service_id' => $this->service->id,
             'terms' => '1',

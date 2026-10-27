@@ -49,9 +49,9 @@ class CreateReferralAction
                 ]
             );
 
-            // 3. Crear o actualizar Cliente Referido (Encargado o Adulto)
+            // 3. Crear o actualizar Cliente Referido (Alumno)
             $refereePhone = $this->duplicateService->normalizePhone($data['referee']['phone']);
-            $isSamePerson = !empty($data['student']['is_same_as_customer']);
+            $hasSeparateStudent = !empty($data['student']) && empty($data['student']['is_same_as_customer']) && !empty($data['student']['full_name']);
 
             $referee = Customer::firstOrCreate(
                 ['phone' => $refereePhone],
@@ -59,12 +59,12 @@ class CreateReferralAction
                     'full_name' => trim($data['referee']['full_name']),
                     'email' => $data['referee']['email'] ?? null,
                     'identification' => $this->duplicateService->normalizeIdentification($data['referee']['identification'] ?? null),
-                    'customer_type' => $isSamePerson ? 'adult_student' : 'guardian',
+                    'customer_type' => $hasSeparateStudent ? 'guardian' : 'both',
                 ]
             );
 
             // 4. Crear registro del Alumno
-            if ($isSamePerson) {
+            if (!$hasSeparateStudent) {
                 $student = Student::firstOrCreate(
                     [
                         'customer_id' => $referee->id,
