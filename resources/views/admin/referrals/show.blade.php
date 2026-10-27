@@ -284,34 +284,18 @@
                 </div>
             </div>
 
-            <!-- Tarjeta: Persona Referida (Contacto / Encargado) -->
+            <!-- Tarjeta: Contacto Referido -->
             <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Persona Referida (Contacto)</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Contacto Referido</span>
                 <h3 class="text-base font-extrabold text-slate-900">{{ $referral->referee->full_name }}</h3>
                 <div class="space-y-1 text-xs text-slate-600">
                     <p><strong>Teléfono:</strong> {{ $referral->referee->phone }}</p>
                     <p><strong>Cédula:</strong> {{ $referral->referee->identification ?? 'N/D' }}</p>
-                    <p><strong>Email:</strong> {{ $referral->referee->email ?? 'N/D' }}</p>
                 </div>
                 <div class="pt-2">
                     <a href="https://wa.me/{{ $referral->referee->normalized_phone }}" target="_blank" class="w-full inline-flex items-center justify-center py-2 px-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold text-xs transition shadow-sm">
                         Contactar Referido por WhatsApp ↗
                     </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta: Alumno a Matricular -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Alumno que Asistirá</span>
-                <h3 class="text-base font-extrabold text-slate-900">{{ $referral->student->full_name ?? $referral->referee->full_name }}</h3>
-                <div class="space-y-1 text-xs text-slate-600">
-                    <p><strong>Tipo:</strong> {{ $referral->student && $referral->student->is_same_as_customer ? 'Adulto (Mismo contacto)' : 'Menor a cargo' }}</p>
-                    @if ($referral->student && $referral->student->birth_date)
-                        <p><strong>Nacimiento:</strong> {{ $referral->student->birth_date->format('d/m/Y') }} ({{ $referral->student->age }} años)</p>
-                    @endif
-                    @if ($referral->student && $referral->student->medical_notes)
-                        <p><strong>Notas Médicas:</strong> <span class="text-amber-700">{{ $referral->student->medical_notes }}</span></p>
-                    @endif
                 </div>
             </div>
 

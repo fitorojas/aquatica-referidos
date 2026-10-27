@@ -63,8 +63,7 @@
                     <tr>
                         <th class="py-3 px-6">Código / Fecha</th>
                         <th class="py-3 px-6">Referente (Cliente)</th>
-                        <th class="py-3 px-6">Referido (Contacto)</th>
-                        <th class="py-3 px-6">Alumno a Matricular</th>
+                        <th class="py-3 px-6">Contacto Referido</th>
                         <th class="py-3 px-6">Servicio</th>
                         <th class="py-3 px-6">Estado</th>
                         <th class="py-3 px-6 text-right">Acción</th>
@@ -94,17 +93,6 @@
                             </td>
 
                             <td class="py-4 px-6">
-                                @if ($ref->student && !$ref->student->is_same_as_customer)
-                                    <span class="font-semibold text-slate-800 block">{{ $ref->student->full_name }}</span>
-                                    <span class="text-[11px] text-slate-400">Menor ({{ $ref->student->age ? $ref->student->age . ' años' : 'Edad N/D' }})</span>
-                                @else
-                                    <span class="text-xs text-sky-700 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
-                                        Mismo Adulto
-                                    </span>
-                                @endif
-                            </td>
-
-                            <td class="py-4 px-6">
                                 <span class="font-medium text-xs text-slate-700 block">{{ $ref->service->name }}</span>
                                 <span class="text-[11px] font-bold text-emerald-600">₡30.800</span>
                             </td>
@@ -123,7 +111,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-12 text-center text-slate-400">No se encontraron expedientes con los criterios seleccionados.</td>
+                            <td colspan="6" class="py-12 text-center text-slate-400">No se encontraron expedientes con los criterios seleccionados.</td>
                         </tr>
                     @endforelse
                 </tbody>

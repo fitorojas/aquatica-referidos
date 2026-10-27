@@ -45,18 +45,14 @@
             </div>
 
             <!-- Datos Generales -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6 text-sm border-b border-slate-100">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 text-sm border-b border-slate-100">
                 <div>
                     <span class="text-xs text-slate-400 block font-medium">Cliente Referente</span>
                     <span class="font-bold text-slate-800">{{ $referral->referrer->full_name }}</span>
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block font-medium">Persona Referida</span>
+                    <span class="text-xs text-slate-400 block font-medium">Contacto Referido</span>
                     <span class="font-bold text-slate-800">{{ $referral->referee->full_name }}</span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 block font-medium">Alumno a Matricular</span>
-                    <span class="font-bold text-slate-800">{{ $referral->student->full_name ?? $referral->referee->full_name }}</span>
                 </div>
                 <div>
                     <span class="text-xs text-slate-400 block font-medium">Servicio Seleccionado</span>

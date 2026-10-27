@@ -41,10 +41,6 @@
                 <span class="font-bold text-slate-800">{{ $referral->referee->full_name }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-slate-500">Alumno a matricular:</span>
-                <span class="font-bold text-slate-800">{{ $referral->student->full_name ?? $referral->referee->full_name }}</span>
-            </div>
-            <div class="flex justify-between">
                 <span class="text-slate-500">Servicio solicitado:</span>
                 <span class="font-bold text-sky-700">{{ $referral->service->name }}</span>
             </div>

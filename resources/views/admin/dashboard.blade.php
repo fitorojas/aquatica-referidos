@@ -138,7 +138,7 @@
                     <tr>
                         <th class="py-3 px-6">Código</th>
                         <th class="py-3 px-6">Referente</th>
-                        <th class="py-3 px-6">Referido / Alumno</th>
+                        <th class="py-3 px-6">Contacto Referido</th>
                         <th class="py-3 px-6">Servicio</th>
                         <th class="py-3 px-6">Estado</th>
                         <th class="py-3 px-6 text-right">Acción</th>
@@ -156,7 +156,7 @@
                             </td>
                             <td class="py-4 px-6">
                                 <span class="font-semibold text-slate-800 block">{{ $ref->referee->full_name }}</span>
-                                <span class="text-xs text-slate-500">Alumno: {{ $ref->student->full_name ?? $ref->referee->full_name }}</span>
+                                <span class="text-xs text-slate-500">{{ $ref->referee->phone }}</span>
                             </td>
                             <td class="py-4 px-6 text-xs text-slate-600 font-medium">
                                 {{ $ref->service->name }}
