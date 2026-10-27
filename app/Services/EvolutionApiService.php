@@ -94,7 +94,7 @@ class EvolutionApiService
     }
 
     /**
-     * Envía alerta inmediata al grupo administrativo de WhatsApp
+     * 1. Alerta inmediata al grupo administrativo de WhatsApp
      */
     public function notifyAdminGroup(Referral $referral): void
     {
@@ -105,24 +105,23 @@ class EvolutionApiService
         }
 
         $serviceName = $referral->service->name ?? 'Servicio AQUATICA';
-        $studentName = $referral->student->full_name ?? $referral->referee->full_name;
         $referrerName = $referral->referrer->full_name;
+        $refereeName = $referral->referee->full_name;
         $refereePhone = $referral->referee->phone;
 
         $message = "🏊‍♂️ *¡NUEVO REFERIDO REGISTRADO EN AQUATICA!* 🏊‍♂️\n\n"
             . "📋 *Código:* `{$referral->referral_code}`\n"
-            . "👤 *Referente:* {$referrerName} ({$referral->referrer->phone})\n"
-            . "🎯 *Referido:* {$referral->referee->full_name} ({$refereePhone})\n"
-            . "🧒 *Alumno:* {$studentName}\n"
+            . "👤 *Referente (Cliente):* {$referrerName} ({$referral->referrer->phone})\n"
+            . "🎯 *Contacto Referido:* {$refereeName} ({$refereePhone})\n"
             . "🌊 *Servicio de interés:* {$serviceName}\n"
-            . "💰 *Beneficio:* ₡30.800 (sujeto a validación)\n\n"
+            . "💰 *Beneficio previsto:* ₡30.800 (sujeto a validación)\n\n"
             . "👉 Ver expediente: " . url("/admin/referrals/{$referral->id}");
 
         $this->sendTextMessage($groupJid, $message, $referral->id, 'admin_group_alert');
     }
 
     /**
-     * Envía mensaje de bienvenida al referido
+     * 2. Mensaje automático de bienvenida al referido (al registrarse en la web)
      */
     public function sendRefereeWelcome(Referral $referral): void
     {
@@ -132,11 +131,48 @@ class EvolutionApiService
 
         $message = "¡Hola *{$referee->full_name}*! 👋🏊‍♀️\n\n"
             . "*{$referrerName}* te ha referido al programa de natación de *AQUATICA* para el servicio *{$serviceName}*.\n\n"
-            . "🎉 Tienes disponible el beneficio especial de *₡30.800 en tu mensualidad* tras verificar tu matrícula.\n\n"
+            . "🎉 Tienes disponible el beneficio especial de *₡30.800 en tu mensualidad* (precio regular ₡35.000) una vez completada tu matrícula.\n\n"
             . "Tu código de expediente es: *{$referral->referral_code}*\n\n"
-            . "Muy pronto nuestro equipo administrativo se comunicará contigo para coordinar tu horario y evaluación. Si tienes consultas, puedes responder directamente a este mensaje.\n\n"
+            . "Muy pronto nuestro equipo de recepción se comunicará contigo para coordinar tu horario y evaluación acuática. Si tienes consultas, puedes responder directamente a este mensaje.\n\n"
             . "¡Bienvenido a la familia AQUATICA! 💦";
 
         $this->sendTextMessage($referee->phone, $message, $referral->id, 'referee_welcome');
+    }
+
+    /**
+     * 3. Mensaje al referente cuando el referido ya pagó y el beneficio de ₡30.800 está ACTIVO
+     */
+    public function sendReferrerBenefitApproved(Referral $referral): void
+    {
+        $referrer = $referral->referrer;
+        $referee = $referral->referee;
+        $serviceName = $referral->service->name ?? 'AQUATICA';
+
+        $message = "¡Hola *{$referrer->full_name}*! 🎉🏊‍♂️\n\n"
+            . "Te tenemos excelentes noticias: Tu referido *{$referee->full_name}* ha completado su matrícula y pago en *AQUATICA* ({$serviceName}).\n\n"
+            . "✨ *¡Tu beneficio ha sido activado!* ✨\n"
+            . "Tu próxima mensualidad será a la tarifa preferencial de *₡30.800*.\n\n"
+            . "Expediente: *{$referral->referral_code}*\n\n"
+            . "¡Muchas gracias por recomendarnos y seguir nadando con nosotros! 💦";
+
+        $this->sendTextMessage($referrer->phone, $message, $referral->id, 'referrer_benefit_approved');
+    }
+
+    /**
+     * 4. Mensaje al referido confirmándole que su mensualidad quedó oficialmente en ₡30.800
+     */
+    public function sendRefereeBenefitApproved(Referral $referral): void
+    {
+        $referee = $referral->referee;
+        $serviceName = $referral->service->name ?? 'AQUATICA';
+
+        $message = "¡Hola *{$referee->full_name}*! 🎉🏊‍♀️\n\n"
+            . "Hemos validado tu matrícula y pago en *AQUATICA* ({$serviceName}).\n\n"
+            . "✨ *¡Tu beneficio comercial de ₡30.800 está formalmente activado!* ✨\n"
+            . "Agradecemos a *{$referral->referrer->full_name}* por haberte recomendado.\n\n"
+            . "Expediente: *{$referral->referral_code}*\n\n"
+            . "¡Nos vemos en la piscina! 💦";
+
+        $this->sendTextMessage($referee->phone, $message, $referral->id, 'referee_benefit_approved');
     }
 }

@@ -21,8 +21,11 @@ class ProcessWhatsAppNotificationJob implements ShouldQueue
 
     public function handle(EvolutionApiService $evolutionService): void
     {
-        if ($this->type === 'referee_welcome') {
-            $evolutionService->sendRefereeWelcome($this->referral);
-        }
+        match ($this->type) {
+            'referee_welcome' => $evolutionService->sendRefereeWelcome($this->referral),
+            'referrer_benefit_approved' => $evolutionService->sendReferrerBenefitApproved($this->referral),
+            'referee_benefit_approved' => $evolutionService->sendRefereeBenefitApproved($this->referral),
+            default => null,
+        };
     }
 }
