@@ -14,7 +14,10 @@ class ReferralRegistrationController extends Controller
 {
     public function create()
     {
-        $services = Service::where('is_active', true)->get();
+        // Aquafitness de primero en la lista
+        $services = Service::where('is_active', true)
+            ->orderByRaw("CASE WHEN slug = 'aquafitness' THEN 0 ELSE 1 END, id ASC")
+            ->get();
         $benefitAmount = SystemSetting::get('referral_benefit_amount', 30800.00);
 
         return view('public.register', compact('services', 'benefitAmount'));
@@ -57,5 +60,10 @@ class ReferralRegistrationController extends Controller
         }
 
         return view('public.track', compact('referral', 'search'));
+    }
+
+    public function terms()
+    {
+        return view('public.terms');
     }
 }

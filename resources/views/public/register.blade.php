@@ -40,7 +40,7 @@
         </div>
     @endif
 
-    <!-- Formulario de Registro Simplificado -->
+    <!-- Formulario de Registro Rápido -->
     <form action="{{ route('public.referral.store') }}" method="POST" class="space-y-10">
         @csrf
 
@@ -56,7 +56,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre completo *</label>
                     <input type="text" name="referrer[full_name]" value="{{ old('referrer.full_name') }}" required
@@ -68,13 +68,6 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Teléfono / WhatsApp *</label>
                     <input type="tel" name="referrer[phone]" value="{{ old('referrer.phone') }}" required
                         placeholder="Ej. 8888 8888"
-                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Cédula o DIMEX <span class="text-xs text-slate-400 font-normal">(Opcional)</span></label>
-                    <input type="text" name="referrer[identification]" value="{{ old('referrer.identification') }}"
-                        placeholder="Ej. 1-1234-0567"
                         class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
                 </div>
             </div>
@@ -92,7 +85,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre del referido / Alumno *</label>
                     <input type="text" name="referee[full_name]" value="{{ old('referee.full_name') }}" required
@@ -106,17 +99,10 @@
                         placeholder="Ej. 8765 4321"
                         class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Cédula o DIMEX <span class="text-xs text-slate-400 font-normal">(Opcional)</span></label>
-                    <input type="text" name="referee[identification]" value="{{ old('referee.identification') }}"
-                        placeholder="Ej. 1-0987-0654"
-                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm py-2.5 px-3.5 border">
-                </div>
             </div>
         </div>
 
-        <!-- SECCIÓN 3: Selección del Servicio Participante -->
+        <!-- SECCIÓN 3: Selección del Servicio Participante (Aquafitness de primero) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
             <div class="flex items-center space-x-3 pb-4 mb-6 border-b border-slate-100">
                 <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
@@ -130,10 +116,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($services as $service)
-                    <label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition hover:border-sky-400 group {{ old('service_id', 1) == $service->id ? 'border-sky-600 bg-sky-50/50' : 'border-slate-200' }}">
+                    @php
+                        $isSelected = old('service_id', $services->first()->id) == $service->id;
+                    @endphp
+                    <label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition hover:border-sky-400 group {{ $isSelected ? 'border-sky-600 bg-sky-50/50' : 'border-slate-200' }}">
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-bold text-slate-900 group-hover:text-sky-600 transition">{{ $service->name }}</span>
-                            <input type="radio" name="service_id" value="{{ $service->id }}" {{ old('service_id', 1) == $service->id ? 'checked' : '' }} class="h-4 w-4 text-sky-600 border-slate-300 focus:ring-sky-500">
+                            <input type="radio" name="service_id" value="{{ $service->id }}" {{ $isSelected ? 'checked' : '' }} class="h-4 w-4 text-sky-600 border-slate-300 focus:ring-sky-500">
                         </div>
                         <p class="text-xs text-slate-500 mb-3 flex-grow">{{ $service->description }}</p>
                         <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
@@ -152,7 +141,7 @@
             </div>
         </div>
 
-        <!-- Términos y Envío -->
+        <!-- Términos y Envío con Enlace al PDF Oficial -->
         <div class="bg-slate-100 rounded-2xl p-6 border border-slate-200">
             <label class="flex items-start space-x-3 cursor-pointer">
                 <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required
@@ -161,6 +150,21 @@
                     Acepto los términos y condiciones del programa. Entiendo que la tarifa de <strong>₡{{ number_format($benefitAmount, 0, ',', '.') }}</strong> se activará tanto para mí como para mi referido una vez que la administración de AQUATICA valide la elegibilidad, la matrícula y el pago correspondiente.
                 </span>
             </label>
+
+            <!-- Acceso directo al PDF Oficial de Condiciones -->
+            <div class="mt-4 pt-3 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <a href="{{ asset('docs/condiciones-programa-referidos-aquatica.pdf') }}" target="_blank"
+                    class="inline-flex items-center font-bold text-sky-700 hover:text-sky-900 transition">
+                    <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Descargar Condiciones Oficiales de la Campaña (PDF) ↗</span>
+                </a>
+
+                <a href="{{ route('public.terms') }}" target="_blank" class="text-slate-500 hover:text-slate-800 underline">
+                    Ver reglamento completo en pantalla
+                </a>
+            </div>
 
             <div class="mt-6">
                 <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-extrabold text-base shadow-lg shadow-sky-600/30 hover:from-sky-700 hover:to-cyan-700 transition transform hover:-translate-y-0.5">

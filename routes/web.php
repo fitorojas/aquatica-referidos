@@ -21,6 +21,7 @@ Route::get('/', [ReferralRegistrationController::class, 'create'])->name('public
 Route::post('/referidos', [ReferralRegistrationController::class, 'store'])->name('public.referral.store');
 Route::get('/referidos/exito/{code}', [ReferralRegistrationController::class, 'success'])->name('public.referral.success');
 Route::get('/referidos/estado', [ReferralRegistrationController::class, 'track'])->name('public.referral.track');
+Route::get('/condiciones', [ReferralRegistrationController::class, 'terms'])->name('public.terms');
 
 /*
 |--------------------------------------------------------------------------

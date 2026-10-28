@@ -90,5 +90,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Enlace al PDF Oficial -->
+    <div class="mt-8 text-center">
+        <a href="{{ asset('docs/condiciones-programa-referidos-aquatica.pdf') }}" target="_blank" class="inline-flex items-center text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 px-4 py-2 rounded-xl border border-sky-200 transition">
+            <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+            </svg>
+            Consultar Condiciones Oficiales de la Campaña (PDF) ↗
+        </a>
+    </div>
 </div>
 @endsection

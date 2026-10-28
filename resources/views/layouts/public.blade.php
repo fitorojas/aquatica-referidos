@@ -38,6 +38,9 @@
                     <a href="{{ route('public.referral.track') }}" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:text-sky-600 hover:bg-slate-100 transition">
                         Consultar Estado
                     </a>
+                    <a href="{{ route('public.terms') }}" class="px-3 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:text-sky-600 hover:bg-slate-100 transition">
+                        Condiciones
+                    </a>
                     <a href="{{ route('admin.login') }}" class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-200">
                         Acceso Admin
                     </a>
@@ -90,6 +93,9 @@
                     <p class="text-xs text-slate-400 leading-relaxed">
                         Beneficio comercial de mensualidad promocional de ₡30.800 aplicable tanto al cliente referente como al referido una vez validada la matrícula y el pago correspondiente por la administración de AQUATICA. Sujeto al reglamento oficial.
                     </p>
+                    <a href="{{ asset('docs/condiciones-programa-referidos-aquatica.pdf') }}" target="_blank" class="mt-2 inline-block font-bold text-sky-400 hover:text-sky-300 underline text-xs">
+                        Descargar Reglamento Oficial (PDF) ↗
+                    </a>
                 </div>
             </div>
             <div class="pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
