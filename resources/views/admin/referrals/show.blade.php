@@ -202,8 +202,9 @@
                                     <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">
                                         {{ $benefit->beneficiary_type_label }}
                                     </span>
-                                    <span class="text-xs font-extrabold px-2 py-0.5 rounded-full {{ $benefit->status === 'applied' ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800' }}">
-                                        {{ ucfirst($benefit->status) }}
+                                    <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white inline-flex items-center">
+                                        <svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        {{ $benefit->status === 'applied' ? 'Aplicado en Cobro' : ucfirst($benefit->status) }}
                                     </span>
                                 </div>
                                 <div class="text-2xl font-extrabold text-emerald-700">
@@ -211,15 +212,6 @@
                                 </div>
                                 <p class="text-xs text-slate-700 font-semibold mt-1">{{ $benefit->beneficiary->full_name }}</p>
                                 <p class="text-[11px] text-slate-500 mt-2">Periodo: {{ $benefit->apply_to_period ?? 'N/D' }}</p>
-
-                                @if ($benefit->status === 'granted')
-                                    <form action="{{ route('admin.benefits.apply', $benefit) }}" method="POST" class="mt-3 pt-3 border-t border-emerald-200">
-                                        @csrf
-                                        <button type="submit" class="w-full py-1.5 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition">
-                                            Marcar como Aplicado en Cobro
-                                        </button>
-                                    </form>
-                                @endif
                             </div>
                         @endforeach
                     </div>

@@ -22,6 +22,9 @@ class ComprehensiveReferralWorkflowTest extends TestCase
     {
         parent::setUp();
 
+        \Illuminate\Support\Facades\Http::fake();
+        \Illuminate\Support\Facades\Queue::fake();
+
         $this->adminUser = User::where('email', 'admin@aquatica.cr')->first();
         $this->service = Service::where('slug', 'bebes-y-ninos-principiantes')->first();
     }

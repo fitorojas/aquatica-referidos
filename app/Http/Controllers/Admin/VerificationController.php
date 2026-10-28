@@ -143,7 +143,7 @@ class VerificationController extends Controller
                         'beneficiary_customer_id' => $referral->referrer_customer_id,
                         'discount_amount' => $benefitAmount,
                         'apply_to_period' => $period,
-                        'status' => 'granted',
+                        'status' => 'applied',
                         'authorized_by' => Auth::id(),
                         'notes' => "Beneficio generado por la matrícula y pago de {$referral->referee->full_name}.",
                     ]
@@ -159,7 +159,7 @@ class VerificationController extends Controller
                         'beneficiary_customer_id' => $referral->referee_customer_id,
                         'discount_amount' => $benefitAmount,
                         'apply_to_period' => $period,
-                        'status' => 'granted',
+                        'status' => 'applied',
                         'authorized_by' => Auth::id(),
                         'notes' => "Beneficio de bienvenida aplicado a la mensualidad por recomendación de {$referral->referrer->full_name}.",
                     ]
