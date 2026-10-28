@@ -133,19 +133,22 @@
                 </div>
 
                 <!-- PASO 3: PAGO Y ACTIVACIÓN DE BENEFICIO (₡30.800) -->
-                <div class="p-5 rounded-2xl border {{ $referral->benefit_approved_at ? 'bg-green-50 border-green-300' : 'bg-slate-50 border-slate-200' }}">
+                @php
+                    $isBenefitActive = $referral->benefit_approved_at || $referral->benefits->isNotEmpty();
+                @endphp
+                <div class="p-5 rounded-2xl border {{ $isBenefitActive ? 'bg-green-50 border-green-300' : 'bg-slate-50 border-slate-200' }}">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-2">
-                            <span class="w-6 h-6 rounded-full {{ $referral->benefit_approved_at ? 'bg-green-600 text-white' : 'bg-slate-300 text-slate-700' }} flex items-center justify-center text-xs font-bold">3</span>
+                            <span class="w-6 h-6 rounded-full {{ $isBenefitActive ? 'bg-green-600 text-white' : 'bg-slate-300 text-slate-700' }} flex items-center justify-center text-xs font-bold">3</span>
                             <h3 class="font-bold text-slate-900 text-sm">Paso 3: Verificación de Pago & Otorgamiento de ₡30.800</h3>
                         </div>
-                        @if ($referral->benefit_approved_at)
+                        @if ($isBenefitActive)
                             <span class="text-xs font-bold text-green-900 bg-green-200 px-3 py-1 rounded-full border border-green-400">BENEFICIO ₡30.800 ACTIVADO</span>
                         @endif
                     </div>
                     <p class="text-xs text-slate-500 mb-4">Ingresa el comprobante de pago de la matrícula/mensualidad. Al verificar el pago, el sistema otorgará automáticamente la tarifa de ₡30.800 a ambas personas.</p>
 
-                    @if ($referral->enrolled_at && !$referral->benefit_approved_at && $referral->status !== 'rejected')
+                    @if ($referral->enrolled_at && !$isBenefitActive && $referral->status !== 'rejected')
                         <form action="{{ route('admin.verify.payment', $referral) }}" method="POST" enctype="multipart/form-data" class="space-y-4 pt-3 border-t border-slate-200">
                             @csrf
                             <input type="hidden" name="result" value="approved">

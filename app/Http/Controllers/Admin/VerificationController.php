@@ -94,6 +94,10 @@ class VerificationController extends Controller
      */
     public function verifyPayment(Request $request, Referral $referral)
     {
+        if ($referral->benefit_approved_at || $referral->benefits()->exists()) {
+            return back()->withErrors(['payment' => 'Los beneficios de ₡30.800 para este expediente ya fueron generados previamente y no pueden duplicarse.']);
+        }
+
         $validated = $request->validate([
             'result' => ['required', 'in:approved,rejected,pending_info'],
             'receipt_number' => ['required_if:result,approved', 'nullable', 'string', 'max:100'],
@@ -129,29 +133,37 @@ class VerificationController extends Controller
                 $benefitAmount = SystemSetting::get('referral_benefit_amount', 30800.00);
                 $period = $validated['apply_period'] ?? date('Y-m');
 
-                // Beneficio para el Referente
-                BenefitHistory::create([
-                    'referral_id' => $referral->id,
-                    'beneficiary_customer_id' => $referral->referrer_customer_id,
-                    'beneficiary_type' => 'referrer',
-                    'discount_amount' => $benefitAmount,
-                    'apply_to_period' => $period,
-                    'status' => 'granted',
-                    'authorized_by' => Auth::id(),
-                    'notes' => "Beneficio generado por la matrícula y pago de {$referral->referee->full_name}.",
-                ]);
+                // Beneficio para el Referente (updateOrCreate previene duplicados)
+                BenefitHistory::updateOrCreate(
+                    [
+                        'referral_id' => $referral->id,
+                        'beneficiary_type' => 'referrer',
+                    ],
+                    [
+                        'beneficiary_customer_id' => $referral->referrer_customer_id,
+                        'discount_amount' => $benefitAmount,
+                        'apply_to_period' => $period,
+                        'status' => 'granted',
+                        'authorized_by' => Auth::id(),
+                        'notes' => "Beneficio generado por la matrícula y pago de {$referral->referee->full_name}.",
+                    ]
+                );
 
-                // Beneficio para el Referido
-                BenefitHistory::create([
-                    'referral_id' => $referral->id,
-                    'beneficiary_customer_id' => $referral->referee_customer_id,
-                    'beneficiary_type' => 'referee',
-                    'discount_amount' => $benefitAmount,
-                    'apply_to_period' => $period,
-                    'status' => 'granted',
-                    'authorized_by' => Auth::id(),
-                    'notes' => "Beneficio de bienvenida aplicado a la mensualidad por recomendación de {$referral->referrer->full_name}.",
-                ]);
+                // Beneficio para el Referido (updateOrCreate previene duplicados)
+                BenefitHistory::updateOrCreate(
+                    [
+                        'referral_id' => $referral->id,
+                        'beneficiary_type' => 'referee',
+                    ],
+                    [
+                        'beneficiary_customer_id' => $referral->referee_customer_id,
+                        'discount_amount' => $benefitAmount,
+                        'apply_to_period' => $period,
+                        'status' => 'granted',
+                        'authorized_by' => Auth::id(),
+                        'notes' => "Beneficio de bienvenida aplicado a la mensualidad por recomendación de {$referral->referrer->full_name}.",
+                    ]
+                );
 
                 ReferralActivity::create([
                     'referral_id' => $referral->id,
