@@ -20,7 +20,13 @@ class ReferralManagementController extends Controller
         $query = Referral::with(['referrer', 'referee', 'student', 'service', 'duplicateDetections'])
             ->latest();
 
-        if (!empty($status)) {
+        if ($status === 'duplicates') {
+            $query->whereHas('duplicateDetections', function ($q) {
+                $q->where('is_resolved', false);
+            });
+        } elseif ($status === 'pending_contact') {
+            $query->whereIn('status', ['pending', 'in_contact']);
+        } elseif (!empty($status)) {
             $query->where('status', $status);
         }
 
@@ -45,7 +51,16 @@ class ReferralManagementController extends Controller
         $referrals = $query->paginate(15)->withQueryString();
         $services = Service::where('is_active', true)->get();
 
-        return view('admin.referrals.index', compact('referrals', 'services', 'status', 'serviceId', 'search'));
+        $tabCounts = [
+            'all' => Referral::count(),
+            'pending_contact' => Referral::whereIn('status', ['pending', 'in_contact'])->count(),
+            'eligible' => Referral::where('status', 'eligible')->count(),
+            'enrolled' => Referral::where('status', 'enrolled')->count(),
+            'benefit_approved' => Referral::where('status', 'benefit_approved')->count(),
+            'duplicates' => Referral::whereHas('duplicateDetections', fn($q) => $q->where('is_resolved', false))->count(),
+        ];
+
+        return view('admin.referrals.index', compact('referrals', 'services', 'status', 'serviceId', 'search', 'tabCounts'));
     }
 
     public function show(Referral $referral)

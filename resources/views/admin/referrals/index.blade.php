@@ -4,6 +4,42 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Píldoras de Filtro Rápido (Tabs de Pipeline) -->
+    <div class="flex items-center space-x-2 overflow-x-auto pb-2 text-xs">
+        <a href="{{ route('admin.referrals.index') }}" 
+           class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ empty($status) ? 'bg-sky-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
+            <span>Todos</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] {{ empty($status) ? 'bg-sky-700 text-white' : 'bg-slate-100 text-slate-600' }}">{{ $tabCounts['all'] }}</span>
+        </a>
+        <a href="{{ route('admin.referrals.index', ['status' => 'pending_contact']) }}" 
+           class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ $status === 'pending_contact' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
+            <span>Por Contactar</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] {{ $status === 'pending_contact' ? 'bg-amber-700 text-white' : 'bg-amber-50 text-amber-700' }}">{{ $tabCounts['pending_contact'] }}</span>
+        </a>
+        <a href="{{ route('admin.referrals.index', ['status' => 'eligible']) }}" 
+           class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ $status === 'eligible' ? 'bg-sky-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
+            <span>Elegibles</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] {{ $status === 'eligible' ? 'bg-sky-700 text-white' : 'bg-sky-50 text-sky-700' }}">{{ $tabCounts['eligible'] }}</span>
+        </a>
+        <a href="{{ route('admin.referrals.index', ['status' => 'enrolled']) }}" 
+           class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ $status === 'enrolled' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
+            <span>Matriculados (Pendiente Pago)</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] {{ $status === 'enrolled' ? 'bg-indigo-700 text-white' : 'bg-indigo-50 text-indigo-700' }}">{{ $tabCounts['enrolled'] }}</span>
+        </a>
+        <a href="{{ route('admin.referrals.index', ['status' => 'benefit_approved']) }}" 
+           class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ $status === 'benefit_approved' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
+            <span>₡30.800 Aprobado</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] {{ $status === 'benefit_approved' ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-700' }}">{{ $tabCounts['benefit_approved'] }}</span>
+        </a>
+        @if ($tabCounts['duplicates'] > 0)
+            <a href="{{ route('admin.referrals.index', ['status' => 'duplicates']) }}" 
+               class="px-4 py-2 rounded-xl font-bold transition flex items-center space-x-2 {{ $status === 'duplicates' ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-300' }}">
+                <span>⚠ Con Alerta Coincidencia</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] {{ $status === 'duplicates' ? 'bg-rose-700 text-white' : 'bg-rose-200 text-rose-800' }}">{{ $tabCounts['duplicates'] }}</span>
+            </a>
+        @endif
+    </div>
+
     <!-- Barra de Filtros y Búsqueda -->
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <form action="{{ route('admin.referrals.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
