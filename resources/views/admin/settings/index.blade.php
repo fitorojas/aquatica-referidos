@@ -49,27 +49,36 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">URL de Evolution API</label>
-                    <input type="url" name="evolution_api_url" value="{{ $settings['evolution_api_url'] ?? '' }}" placeholder="https://tu-evolution-api.com"
+                    <input type="url" name="evolution_api_url" value="{{ $settings['evolution_api_url'] ?? 'https://api.mensajesya.com' }}" placeholder="https://api.mensajesya.com"
                         class="w-full text-sm rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">
+                    <span class="text-[11px] text-slate-400 mt-1 block">Dirección donde está alojada su instancia de Evolution API.</span>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">API Key / Token de Acceso</label>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Nombre de la Instancia</label>
+                    <input type="text" name="evolution_instance_name" value="{{ $settings['evolution_instance_name'] ?? 'aquatica' }}" placeholder="aquatica"
+                        class="w-full text-sm rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">
+                    <span class="text-[11px] text-slate-400 mt-1 block">Nombre de la instancia de WhatsApp conectada en Evolution.</span>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">API Key de Evolution</label>
                     <input type="password" name="evolution_api_key" value="{{ $settings['evolution_api_key'] ?? '' }}" placeholder="••••••••••••••••"
                         class="w-full text-sm rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Nombre de la Instancia Activa</label>
-                    <input type="text" name="evolution_instance_name" value="{{ $settings['evolution_instance_name'] ?? 'aquatica_referidos' }}"
-                        class="w-full text-sm rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">JID del Grupo Administrativo de WhatsApp</label>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">JID del Grupo de WhatsApp (Opcional)</label>
                     <input type="text" name="evolution_admin_group_jid" value="{{ $settings['evolution_admin_group_jid'] ?? '' }}" placeholder="1203630XXXXXXXXX@g.us"
                         class="w-full text-sm rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">
-                    <span class="text-[11px] text-slate-400 mt-1 block">Recibe alerta inmediata con cada nuevo referido registrado.</span>
+                    <span class="text-[11px] text-slate-400 mt-1 block">Identificador del grupo de WhatsApp (ej: 1203630XXXXXXXXX@g.us). Permite recibir alertas en el grupo de recepción.</span>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Números de WhatsApp a Notificar (Destinatarios Individuales)</label>
+                    <textarea name="evolution_admin_phones" rows="3" placeholder="83040000, 83040004, 88998888"
+                        class="w-full text-sm font-mono rounded-xl border-slate-300 py-2.5 px-3.5 border focus:ring-sky-500 focus:border-sky-500">{{ $settings['evolution_admin_phones'] ?? '' }}</textarea>
+                    <span class="text-[11px] text-slate-400 mt-1 block">Ingresa uno o varios números separados por coma o saltos de línea (ej: 83040000, 83040004). Se enviará el resumen inmediato del nuevo referido.</span>
                 </div>
             </div>
 
@@ -78,13 +87,19 @@
                 <label class="flex items-center space-x-3 cursor-pointer">
                     <input type="checkbox" name="evolution_notify_admin_group" value="1" {{ !empty($settings['evolution_notify_admin_group']) && $settings['evolution_notify_admin_group'] !== 'false' ? 'checked' : '' }}
                         class="h-4 w-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
-                    <span class="text-xs font-bold text-slate-700">Enviar alerta automática al grupo administrativo de WhatsApp al registrarse un referido</span>
+                    <span class="text-xs font-bold text-slate-700">Activar alertas automáticas a la administración (Grupo JID y/o Números individuales)</span>
                 </label>
 
                 <label class="flex items-center space-x-3 cursor-pointer">
                     <input type="checkbox" name="evolution_auto_notify_referee" value="1" {{ !empty($settings['evolution_auto_notify_referee']) && $settings['evolution_auto_notify_referee'] !== 'false' ? 'checked' : '' }}
                         class="h-4 w-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
                     <span class="text-xs font-bold text-slate-700">Enviar mensaje de bienvenida y confirmación de beneficio de ₡30.800 al referido</span>
+                </label>
+
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" name="evolution_auto_notify_referrer" value="1" {{ !empty($settings['evolution_auto_notify_referrer']) && $settings['evolution_auto_notify_referrer'] !== 'false' ? 'checked' : '' }}
+                        class="h-4 w-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                    <span class="text-xs font-bold text-slate-700">Enviar mensaje de confirmación de beneficio activo al referente y referido al validar pago</span>
                 </label>
             </div>
 
@@ -99,12 +114,12 @@
     <!-- Prueba de Conexión Evolution API -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
         <h2 class="text-base font-bold text-slate-900 mb-2">Prueba de Conectividad WhatsApp</h2>
-        <p class="text-xs text-slate-500 mb-4">Envía un mensaje de prueba al grupo administrativo configurado para verificar que Evolution API esté respondiendo adecuadamente.</p>
+        <p class="text-xs text-slate-500 mb-4">Envía un mensaje de prueba a los destinatarios administrativos configurados (JID del grupo y/o números individuales) para verificar que Evolution API esté respondiendo adecuadamente.</p>
 
         <form action="{{ route('admin.settings.test_evolution') }}" method="POST">
             @csrf
             <button type="submit" class="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs transition">
-                Enviar Mensaje de Prueba al Grupo Administrativo
+                Enviar Mensaje de Prueba a Destinatarios Administrativos
             </button>
         </form>
     </div>

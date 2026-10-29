@@ -25,6 +25,7 @@ class SettingController extends Controller
             'evolution_api_key' => ['nullable', 'string', 'max:255'],
             'evolution_instance_name' => ['nullable', 'string', 'max:100'],
             'evolution_admin_group_jid' => ['nullable', 'string', 'max:100'],
+            'evolution_admin_phones' => ['nullable', 'string', 'max:1000'],
             'evolution_auto_notify_referee' => ['nullable', 'boolean'],
             'evolution_auto_notify_referrer' => ['nullable', 'boolean'],
             'evolution_notify_admin_group' => ['nullable', 'boolean'],
@@ -46,21 +47,49 @@ class SettingController extends Controller
 
     public function testEvolution(Request $request, EvolutionApiService $evolutionService)
     {
-        $groupJid = SystemSetting::get('evolution_admin_group_jid');
-        if (empty($groupJid)) {
-            return back()->withErrors(['evolution_admin_group_jid' => 'Debe ingresar un JID de grupo administrativo válido para realizar la prueba.']);
+        $groupJid = trim(SystemSetting::get('evolution_admin_group_jid', ''));
+        $phonesRaw = trim(SystemSetting::get('evolution_admin_phones', ''));
+
+        $recipients = [];
+        if (!empty($groupJid)) {
+            $recipients['Grupo JID (' . $groupJid . ')'] = $groupJid;
+        }
+        if (!empty($phonesRaw)) {
+            $phones = preg_split('/[,\n\r;]+/', $phonesRaw, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($phones as $p) {
+                $cleaned = $evolutionService->formatPhoneNumber(trim($p));
+                if (!empty($cleaned) && !in_array($cleaned, $recipients)) {
+                    $recipients['Número (' . $cleaned . ')'] = $cleaned;
+                }
+            }
+        }
+
+        if (empty($recipients)) {
+            return back()->withErrors(['test' => 'Debe ingresar un JID de grupo o al menos un número de teléfono de destino para realizar la prueba.']);
         }
 
         $testMessage = "🧪 *PRUEBA DE CONEXIÓN EVOLUTION API - AQUATICA REFERIDOS*\n\n"
             . "La integración con el sistema autónomo de referidos está respondiendo satisfactoriamente.\n"
             . "Fecha y hora: " . now()->format('Y-m-d H:i:s');
 
-        $result = $evolutionService->sendTextMessage($groupJid, $testMessage, null, 'admin_test');
+        $successCount = 0;
+        $errors = [];
 
-        if ($result['success']) {
-            return back()->with('status', '¡Mensaje de prueba enviado con éxito al grupo administrativo!');
+        foreach ($recipients as $label => $recipient) {
+            $result = $evolutionService->sendTextMessage($recipient, $testMessage, null, 'admin_test');
+            if ($result['success']) {
+                $successCount++;
+            } else {
+                $errors[] = "Error enviando a {$label}: " . ($result['error'] ?? 'Fallo de entrega');
+            }
         }
 
-        return back()->withErrors(['test' => 'Error al comunicar con Evolution API: ' . ($result['error'] ?? 'Verifique la URL y API Key.')]);
+        if ($successCount > 0 && empty($errors)) {
+            return back()->with('status', "¡Mensaje de prueba enviado con éxito a los {$successCount} destinatarios configurados!");
+        } elseif ($successCount > 0) {
+            return back()->with('status', "Enviado a {$successCount} destinatarios con advertencias: " . implode(' | ', $errors));
+        }
+
+        return back()->withErrors(['test' => 'Error al comunicar con Evolution API: ' . implode(' | ', $errors)]);
     }
 }

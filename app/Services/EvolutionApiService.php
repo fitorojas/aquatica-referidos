@@ -27,15 +27,46 @@ class EvolutionApiService
     }
 
     /**
+     * Normaliza el destinatario (JID de grupo o número con código de país 506)
+     */
+    public function formatPhoneNumber(string $recipient): string
+    {
+        $trimmed = trim($recipient);
+        if (empty($trimmed)) {
+            return '';
+        }
+
+        // Si es un JID (@g.us o @s.whatsapp.net), se conserva tal cual
+        if (str_contains($trimmed, '@')) {
+            return $trimmed;
+        }
+
+        // Remover espacios, guiones, paréntesis y signos
+        $digits = preg_replace('/\D+/', '', $trimmed);
+
+        // Si son 8 dígitos (Costa Rica), anteponer el prefijo 506
+        if (strlen($digits) === 8) {
+            return '506' . $digits;
+        }
+
+        return $digits;
+    }
+
+    /**
      * Envía mensaje de texto a un número individual o grupo
      */
     public function sendTextMessage(string $recipient, string $message, ?int $referralId = null, string $type = 'general'): array
     {
+        $formattedRecipient = $this->formatPhoneNumber($recipient);
+        if (empty($formattedRecipient)) {
+            return ['success' => false, 'error' => 'Destinatario vacío'];
+        }
+
         if (!$this->isConfigured()) {
-            Log::info("Evolution API no configurada. Simulando envío a {$recipient}: {$message}");
+            Log::info("Evolution API no configurada. Simulando envío a {$formattedRecipient}: {$message}");
             WhatsAppLog::create([
                 'referral_id' => $referralId,
-                'phone' => $recipient,
+                'phone' => $formattedRecipient,
                 'message_type' => $type,
                 'direction' => 'outgoing',
                 'message_body' => $message,
@@ -52,7 +83,7 @@ class EvolutionApiService
                 'apikey' => $this->apiKey,
                 'Content-Type' => 'application/json',
             ])->timeout(15)->post($endpoint, [
-                'number' => $recipient,
+                'number' => $formattedRecipient,
                 'text' => $message,
             ]);
 
@@ -61,7 +92,7 @@ class EvolutionApiService
 
             WhatsAppLog::create([
                 'referral_id' => $referralId,
-                'phone' => $recipient,
+                'phone' => $formattedRecipient,
                 'message_type' => $type,
                 'direction' => 'outgoing',
                 'message_body' => $message,
@@ -77,11 +108,11 @@ class EvolutionApiService
                 'response' => $responseData,
             ];
         } catch (\Throwable $e) {
-            Log::error("Error enviando mensaje Evolution API a {$recipient}: " . $e->getMessage());
+            Log::error("Error enviando mensaje Evolution API a {$formattedRecipient}: " . $e->getMessage());
 
             WhatsAppLog::create([
                 'referral_id' => $referralId,
-                'phone' => $recipient,
+                'phone' => $formattedRecipient,
                 'message_type' => $type,
                 'direction' => 'outgoing',
                 'message_body' => $message,
@@ -94,13 +125,12 @@ class EvolutionApiService
     }
 
     /**
-     * 1. Alerta inmediata al grupo administrativo de WhatsApp
+     * 1. Alerta inmediata al equipo administrativo (Grupo por JID y/o números individuales)
      */
     public function notifyAdminGroup(Referral $referral): void
     {
-        $groupJid = SystemSetting::get('evolution_admin_group_jid', config('evolution.admin_group_jid'));
-        if (empty($groupJid)) {
-            Log::info("No se ha configurado EVOLUTION_ADMIN_GROUP_JID. Omitiendo alerta a grupo.");
+        $enabled = SystemSetting::get('evolution_notify_admin_group', true);
+        if (!$enabled) {
             return;
         }
 
@@ -117,7 +147,34 @@ class EvolutionApiService
             . "💰 *Beneficio previsto:* ₡30.800 (sujeto a validación)\n\n"
             . "👉 Ver expediente: " . url("/admin/referrals/{$referral->id}");
 
-        $this->sendTextMessage($groupJid, $message, $referral->id, 'admin_group_alert');
+        $recipients = [];
+
+        // 1. Grupo de WhatsApp por JID (si está configurado)
+        $groupJid = trim(SystemSetting::get('evolution_admin_group_jid', config('evolution.admin_group_jid', '')));
+        if (!empty($groupJid)) {
+            $recipients[] = $groupJid;
+        }
+
+        // 2. Números individuales de administración (si están configurados)
+        $phonesRaw = SystemSetting::get('evolution_admin_phones', '');
+        if (!empty($phonesRaw)) {
+            $phones = preg_split('/[,\n\r;]+/', $phonesRaw, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($phones as $p) {
+                $cleaned = $this->formatPhoneNumber(trim($p));
+                if (!empty($cleaned) && !in_array($cleaned, $recipients)) {
+                    $recipients[] = $cleaned;
+                }
+            }
+        }
+
+        if (empty($recipients)) {
+            Log::info("No hay destinatarios administrativos configurados (ni JID ni números individuales). Omitiendo alerta.");
+            return;
+        }
+
+        foreach ($recipients as $recipient) {
+            $this->sendTextMessage($recipient, $message, $referral->id, 'admin_group_alert');
+        }
     }
 
     /**

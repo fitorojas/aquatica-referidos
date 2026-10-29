@@ -53,6 +53,12 @@ class SystemSettingSeeder extends Seeder
                 'description' => 'JID del grupo de WhatsApp administrativo para alertas automáticas.',
             ],
             [
+                'key' => 'evolution_admin_phones',
+                'value' => '',
+                'type' => 'string',
+                'description' => 'Números individuales de WhatsApp a notificar (separados por coma o saltos de línea).',
+            ],
+            [
                 'key' => 'evolution_auto_notify_referee',
                 'value' => 'true',
                 'type' => 'boolean',
