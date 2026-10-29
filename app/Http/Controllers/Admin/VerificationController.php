@@ -175,11 +175,11 @@ class VerificationController extends Controller
                 // Notificar por WhatsApp al referente y al referido que el beneficio de ₡30.800 ya está activo
                 try {
                     if (SystemSetting::get('evolution_auto_notify_referrer', true)) {
-                        \App\Jobs\ProcessWhatsAppNotificationJob::dispatch($referral, 'referrer_benefit_approved');
-                        \App\Jobs\ProcessWhatsAppNotificationJob::dispatch($referral, 'referee_benefit_approved');
+                        \App\Jobs\ProcessWhatsAppNotificationJob::dispatchSync($referral, 'referrer_benefit_approved');
+                        \App\Jobs\ProcessWhatsAppNotificationJob::dispatchSync($referral, 'referee_benefit_approved');
                     }
                 } catch (\Throwable $e) {
-                    // No interrumpe la transacción administrativa
+                    \Illuminate\Support\Facades\Log::error("Error enviando WhatsApp en aprobación de pago: " . $e->getMessage());
                 }
 
                 return back()->with('status', '¡Pago verificado exitosamente! Se generaron los beneficios de ₡' . number_format($benefitAmount, 0) . ' para ambas partes y se notificó por WhatsApp.');

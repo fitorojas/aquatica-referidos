@@ -129,16 +129,16 @@ class CreateReferralAction
                 ],
             ]);
 
-            // 9. Despachar jobs en cola para notificaciones (si habilitadas)
+            // 9. Enviar notificaciones inmediatas por WhatsApp al grupo y al referido
             try {
                 if (SystemSetting::get('evolution_notify_admin_group', true)) {
-                    NotifyAdminGroupNewReferralJob::dispatch($referral);
+                    NotifyAdminGroupNewReferralJob::dispatchSync($referral);
                 }
                 if (SystemSetting::get('evolution_auto_notify_referee', true)) {
-                    ProcessWhatsAppNotificationJob::dispatch($referral, 'referee_welcome');
+                    ProcessWhatsAppNotificationJob::dispatchSync($referral, 'referee_welcome');
                 }
             } catch (\Throwable $e) {
-                // Las notificaciones en cola no interrumpen la transacción de base de datos
+                \Illuminate\Support\Facades\Log::error("Error enviando WhatsApp en nuevo referido: " . $e->getMessage());
             }
 
             return $referral;

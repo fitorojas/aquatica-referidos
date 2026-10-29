@@ -136,16 +136,38 @@ class EvolutionApiService
 
         $serviceName = $referral->service->name ?? 'Servicio AQUATICA';
         $referrerName = $referral->referrer->full_name;
+        $referrerPhone = $referral->referrer->phone;
         $refereeName = $referral->referee->full_name;
         $refereePhone = $referral->referee->phone;
 
+        $referrerDigits = preg_replace('/\D+/', '', $referrerPhone);
+        if (strlen($referrerDigits) === 8) {
+            $referrerDigits = '506' . $referrerDigits;
+        }
+
+        $refereeDigits = preg_replace('/\D+/', '', $refereePhone);
+        if (strlen($refereeDigits) === 8) {
+            $refereeDigits = '506' . $refereeDigits;
+        }
+
+        $baseUrl = rtrim(config('app.url', 'https://referidos.aquatica.cr'), '/');
+        $adminExpedienteUrl = "{$baseUrl}/admin/referrals/{$referral->id}";
+
         $message = "🏊‍♂️ *¡NUEVO REFERIDO REGISTRADO EN AQUATICA!* 🏊‍♂️\n\n"
-            . "📋 *Código:* `{$referral->referral_code}`\n"
-            . "👤 *Referente (Cliente):* {$referrerName} ({$referral->referrer->phone})\n"
-            . "🎯 *Contacto Referido:* {$refereeName} ({$refereePhone})\n"
-            . "🌊 *Servicio de interés:* {$serviceName}\n"
-            . "💰 *Beneficio previsto:* ₡30.800 (sujeto a validación)\n\n"
-            . "👉 Ver expediente: " . url("/admin/referrals/{$referral->id}");
+            . "📋 *Código de Expediente:* `{$referral->referral_code}`\n\n"
+            . "👤 *¿QUIÉN REFIERE? (Cliente Actual):*\n"
+            . "• Nombre: *{$referrerName}*\n"
+            . "• Teléfono: {$referrerPhone}\n"
+            . (!empty($referrerDigits) ? "• Chat WhatsApp: https://wa.me/{$referrerDigits}\n\n" : "\n")
+            . "🎯 *CONTACTO REFERIDO (¿Quién asistirá a clases?):*\n"
+            . "• Nombre: *{$refereeName}*\n"
+            . "• Teléfono: {$refereePhone}\n"
+            . (!empty($refereeDigits) ? "• Contactar por WhatsApp: https://wa.me/{$refereeDigits}\n\n" : "\n")
+            . "🌊 *SERVICIO DE INTERÉS:*\n"
+            . "• *{$serviceName}*\n"
+            . "• Tarifa preferencial: *₡30.800* (Precio regular: ~₡35.000~)\n\n"
+            . "👉 *Ver expediente en Panel Administrativo:*\n"
+            . "{$adminExpedienteUrl}";
 
         $recipients = [];
 
