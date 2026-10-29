@@ -37,9 +37,9 @@ class CreateReferralAction
         }
 
         return DB::transaction(function () use ($data, $analysis) {
-            // 2. Crear o actualizar Cliente Referente
+            // 2. Crear o actualizar Cliente Referente con los datos más recientes
             $referrerPhone = $this->duplicateService->normalizePhone($data['referrer']['phone']);
-            $referrer = Customer::firstOrCreate(
+            $referrer = Customer::updateOrCreate(
                 ['phone' => $referrerPhone],
                 [
                     'full_name' => trim($data['referrer']['full_name']),
@@ -49,11 +49,11 @@ class CreateReferralAction
                 ]
             );
 
-            // 3. Crear o actualizar Cliente Referido (Alumno)
+            // 3. Crear o actualizar Cliente Referido (Alumno) con los datos más recientes
             $refereePhone = $this->duplicateService->normalizePhone($data['referee']['phone']);
             $hasSeparateStudent = !empty($data['student']) && empty($data['student']['is_same_as_customer']) && !empty($data['student']['full_name']);
 
-            $referee = Customer::firstOrCreate(
+            $referee = Customer::updateOrCreate(
                 ['phone' => $refereePhone],
                 [
                     'full_name' => trim($data['referee']['full_name']),
@@ -63,9 +63,9 @@ class CreateReferralAction
                 ]
             );
 
-            // 4. Crear registro del Alumno
+            // 4. Crear o actualizar registro del Alumno
             if (!$hasSeparateStudent) {
-                $student = Student::firstOrCreate(
+                $student = Student::updateOrCreate(
                     [
                         'customer_id' => $referee->id,
                         'is_same_as_customer' => true,
